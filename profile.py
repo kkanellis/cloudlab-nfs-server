@@ -24,10 +24,6 @@ pc.defineParameter("osImage", "Select OS image",
                    portal.ParameterType.IMAGE,
                    imageList[0], imageList)
 
-# Number of NFS clients (there is always a server)
-#pc.defineParameter("clientCount", "Number of NFS clients",
-#                   portal.ParameterType.INTEGER, 2)
-
 # Optional physical type for all nodes.
 pc.defineParameter("phystype", "Optional physical node type",
                    portal.ParameterType.STRING, "c220g5",
@@ -40,7 +36,7 @@ pc.defineParameter("dataset", "Your dataset URN",
 
 # Shared VLAN params
 pc.defineParameter(
-    "sharedVlanName","Name",
+    "sharedVlanName","Shared VLAN Name",
     portal.ParameterType.STRING,"kkanellis-nfs-tiering",
     longDescription="A shared VLAN name (functions as a private key allowing other experiments to connect to this node/VLAN). Must be fewer than 32 alphanumeric characters."),
 
@@ -93,35 +89,14 @@ dsnode.dataset = params.dataset
 dsnode.readonly = False  # always mount the dataset as read-write
 
 # Link between the nfsServer and the ISCSI device that holds the dataset
-dslink = request.Link("dslink")
 dsIface = nfsServer.addInterface()
+dslink = request.Link("dslink")
 dslink.addInterface(dsIface)
 dslink.addInterface(dsnode.interface)
 # Special attributes for this link that we must use.
 dslink.best_effort = True
 dslink.vlan_tagging = True
 dslink.link_multiplexing = True
-
-#vlanIface = nfsServer.addInterface("vlan1")
-#vlanIface.addAddress(
-#    pg.IPv4Address(params.sharedVlanAddress, params.sharedVlanNetmask))
-
-# Attach server to shared vlan.
-#vlan = request.Link("vlan")
-#vlan.addInterface(nfsIface)
-#vlan.createSharedVlan(params.sharedVlanName)
-
-#vlan.link_multiplexing = True
-#vlan.best_effort = True
-
-# The NFS clients, also attached to the NFS lan.
-#for i in range(1, params.clientCount+1):
-#    node = request.RawPC("node%d" % i)
-#    node.disk_image = params.osImage
-#    nfsLan.addInterface(node.addInterface())
-#    # Initialization script for the clients
-#    node.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-client.sh"))
-#    pass
 
 # Print the RSpec to the enclosing page.
 pc.printRequestRSpec(request)
