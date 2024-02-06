@@ -76,11 +76,12 @@ nfsServer = request.RawPC(nfsServerName)
 nfsServer.hardware_type = params.phystype
 nfsServer.disk_image = params.osImage
 
-# Attach server to lan.
+# Create & attach server to vlan.
 nfsIface = nfsServer.addInterface()
 nfsIface.addAddress(
     pg.IPv4Address(params.sharedVlanAddress, params.sharedVlanNetmask))
 nfsLan.addInterface(nfsIface)
+nfsLan.createSharedVlan(params.sharedVlanName)
 
 # Initialization script for the server
 nfsServer.addService(pg.Execute(
@@ -106,12 +107,12 @@ dslink.link_multiplexing = True
 #    pg.IPv4Address(params.sharedVlanAddress, params.sharedVlanNetmask))
 
 # Attach server to shared vlan.
-vlan = request.Link("vlan")
-vlan.addInterface(nfsIface)
-vlan.createSharedVlan(params.sharedVlanName)
+#vlan = request.Link("vlan")
+#vlan.addInterface(nfsIface)
+#vlan.createSharedVlan(params.sharedVlanName)
 
-vlan.link_multiplexing = True
-vlan.best_effort = True
+#vlan.link_multiplexing = True
+#vlan.best_effort = True
 
 # The NFS clients, also attached to the NFS lan.
 #for i in range(1, params.clientCount+1):
