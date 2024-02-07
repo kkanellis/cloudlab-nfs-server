@@ -26,28 +26,30 @@ pc.defineParameter("osImage", "Select OS image",
 
 # Optional physical type for all nodes.
 pc.defineParameter("phystype", "Optional physical node type",
-                   portal.ParameterType.STRING, "c220g5",
-                   longDescription="Specify a single physical node type (pc3000,d710,etc) " +
-                   "instead of letting the resource mapper choose for you.")
+    portal.ParameterType.STRING, "c220g5",
+    longDescription="Specify a single physical node type (pc3000,d710,etc) " +
+                    "instead of letting the resource mapper choose for you.")
 
 pc.defineParameter("dataset", "Your dataset URN",
-                   portal.ParameterType.STRING,
-                   'urn:publicid:IDN+wisc.cloudlab.us:uw-mad-dash-pg0+ltdataset+tiering')
+    portal.ParameterType.STRING,
+    'urn:publicid:IDN+wisc.cloudlab.us:uw-mad-dash-pg0+ltdataset+tiering')
 
 # Shared VLAN params
-pc.defineParameter(
-    "sharedVlanName","Shared VLAN Name",
+pc.defineParameter("sharedVlanName","Shared VLAN Name",
     portal.ParameterType.STRING,"kkanellis-nfs-tiering",
-    longDescription="A shared VLAN name (functions as a private key allowing other experiments to connect to this node/VLAN). Must be fewer than 32 alphanumeric characters."),
+    advanced=True,
+    longDescription="A shared VLAN name (functions as a private key allowing other experiments to connect to this node/VLAN)."
+                    "Must be fewer than 32 alphanumeric characters.")
 
-pc.defineParameter(
-    "sharedVlanAddress","Shared VLAN IP Address",
+pc.defineParameter("sharedVlanAddress","Shared VLAN IP Address",
     portal.ParameterType.STRING,"10.254.254.1",
-    longDescription="Set the IP address for the shared VLAN interface.  Make sure to use an unused address within the subnet of an existing shared vlan!"),
+    advanced=True,
+    longDescription="Set the IP address for the shared VLAN interface.  "
+                    "Make sure to use an unused address within the subnet of an existing shared vlan!")
 
-pc.defineParameter(
-    "sharedVlanNetmask","Shared VLAN Netmask",
+pc.defineParameter("sharedVlanNetmask","Shared VLAN Netmask",
     portal.ParameterType.STRING,"255.255.255.0",
+    advanced=True,
     longDescription="Set the subnet mask for the shared VLAN interface, as a dotted quad.")
 
 
@@ -61,10 +63,8 @@ if params.phystype != "":
 
 pc.verifyParameters()
 
-# The NFS network. All these options are required.
 nfsLan = request.LAN(nfsLanName)
 nfsLan.best_effort = True
-nfsLan.vlan_tagging = True
 nfsLan.link_multiplexing = True
 
 # The NFS server.
@@ -100,3 +100,4 @@ dslink.link_multiplexing = True
 
 # Print the RSpec to the enclosing page.
 pc.printRequestRSpec(request)
+
