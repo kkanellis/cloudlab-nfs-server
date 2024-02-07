@@ -64,8 +64,8 @@ if params.phystype != "":
 pc.verifyParameters()
 
 nfsLan = request.LAN(nfsLanName)
-nfsLan.best_effort = True
-nfsLan.link_multiplexing = True
+#nfsLan.best_effort = True
+#nfsLan.link_multiplexing = True
 
 # The NFS server.
 nfsServer = request.RawPC(nfsServerName)
