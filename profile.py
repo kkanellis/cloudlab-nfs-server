@@ -94,9 +94,9 @@ dslink = request.Link("dslink")
 dslink.addInterface(dsIface)
 dslink.addInterface(dsnode.interface)
 # Special attributes for this link that we must use.
-#dslink.best_effort = True
-#dslink.vlan_tagging = True
-#dslink.link_multiplexing = True
+dslink.best_effort = True
+dslink.vlan_tagging = True
+dslink.link_multiplexing = True
 
 # Print the RSpec to the enclosing page.
 pc.printRequestRSpec(request)
