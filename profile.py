@@ -38,7 +38,7 @@ pc.defineParameter("phystype", "Optional physical node type",
 
 pc.defineParameter("dataset", "Your dataset URN",
     portal.ParameterType.STRING,
-    'urn:publicid:IDN+wisc.cloudlab.us:uw-mad-dash-pg0+ltdataset+tiering')
+    'urn:publicid:IDN+wisc.cloudlab.us:uw-mad-dash-pg0+ltdataset+ml-tiering')
 
 # Shared VLAN params
 pc.defineParameter("sharedVlanName","Shared VLAN Name",
