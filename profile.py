@@ -1,3 +1,9 @@
+"""
+NFS server that mounts and serves a remote dataset to other experiments,
+using a shared VLAN (created by this experiment).
+"""
+
+import ipaddress
 
 import geni.portal as portal
 import geni.rspec.pg as pg
@@ -26,7 +32,7 @@ pc.defineParameter("osImage", "Select OS image",
 
 # Optional physical type for all nodes.
 pc.defineParameter("phystype", "Optional physical node type",
-    portal.ParameterType.STRING, "c220g5",
+    portal.ParameterType.STRING, "",
     longDescription="Specify a single physical node type (pc3000,d710,etc) " +
                     "instead of letting the resource mapper choose for you.")
 
@@ -41,16 +47,10 @@ pc.defineParameter("sharedVlanName","Shared VLAN Name",
     longDescription="A shared VLAN name (functions as a private key allowing other experiments to connect to this node/VLAN)."
                     "Must be fewer than 32 alphanumeric characters.")
 
-pc.defineParameter("sharedVlanAddress","Shared VLAN IP Address",
-    portal.ParameterType.STRING,"10.254.254.1",
+pc.defineParameter("sharedVlanNetwork", "Shared VLAN Network",
+    portal.ParameterType.STRING, "10.254.254.0/24",
     advanced=True,
-    longDescription="Set the IP address for the shared VLAN interface.  "
-                    "Make sure to use an unused address within the subnet of an existing shared vlan!")
-
-pc.defineParameter("sharedVlanNetmask","Shared VLAN Netmask",
-    portal.ParameterType.STRING,"255.255.255.0",
-    advanced=True,
-    longDescription="Set the subnet mask for the shared VLAN interface, as a dotted quad.")
+    longDescription="Set the shared VLAN network, as a CIDR.")
 
 
 # Always need this when using parameters
@@ -63,8 +63,16 @@ if params.phystype != "":
 
 pc.verifyParameters()
 
+# Represent given network
+network = ipaddress.IPv4Network(unicode(params.sharedVlanNetwork))
+netmask = network.netmask
+hosts = network.hosts()
+gateway = next(hosts)
+
 nfsLan = request.LAN(nfsLanName)
+# Uncomment if only *one* experimental port available
 #nfsLan.best_effort = True
+#nfsLan.vlan_tagging = True
 #nfsLan.link_multiplexing = True
 
 # The NFS server.
@@ -75,7 +83,7 @@ nfsServer.disk_image = params.osImage
 # Create & attach server to vlan.
 nfsIface = nfsServer.addInterface()
 nfsIface.addAddress(
-    pg.IPv4Address(params.sharedVlanAddress, params.sharedVlanNetmask))
+    pg.IPv4Address(gateway.compressed, netmask.compressed))
 nfsLan.addInterface(nfsIface)
 nfsLan.createSharedVlan(params.sharedVlanName)
 
